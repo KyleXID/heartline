@@ -1,0 +1,82 @@
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, UploadFile, status
+
+from app.api.auth import CurrentUserDep
+from app.dependencies import DbDep
+from app.models.user import User
+from app.schemas.conversation import (
+    ConversationCreate,
+    ConversationImageResponse,
+    ConversationResponse,
+    ImageUploadResponse,
+)
+from app.services.conversation import (
+    create_conversation,
+    get_conversation,
+    save_upload_images,
+)
+
+router = APIRouter(prefix="/api/conversations", tags=["conversations"])
+
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/heic"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+MAX_FILES = 20
+
+
+@router.post("/", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
+async def create(data: ConversationCreate, db: DbDep, user: CurrentUserDep) -> ConversationResponse:
+    conv = await create_conversation(db, user.id, data.target_id)
+    return ConversationResponse.model_validate(conv)
+
+
+@router.post("/{conversation_id}/images", response_model=ImageUploadResponse)
+async def upload_images(
+    conversation_id: str,
+    files: list[UploadFile],
+    db: DbDep,
+    user: CurrentUserDep,
+) -> ImageUploadResponse:
+    conv = await get_conversation(db, conversation_id, user.id)
+    if not conv:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="대화를 찾을 수 없습니다.",
+        )
+
+    if len(files) > MAX_FILES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"최대 {MAX_FILES}개까지 업로드할 수 있습니다.",
+        )
+
+    for file in files:
+        if file.content_type not in ALLOWED_TYPES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"지원하지 않는 파일 형식입니다: {file.content_type}",
+            )
+        if file.size and file.size > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="파일 크기는 10MB 이하여야 합니다.",
+            )
+
+    start_order = len(conv.images)
+    images = await save_upload_images(db, conv.id, files, start_order)
+
+    return ImageUploadResponse(
+        uploaded=len(images),
+        images=[ConversationImageResponse.model_validate(img) for img in images],
+    )
+
+
+@router.get("/{conversation_id}", response_model=ConversationResponse)
+async def get(conversation_id: str, db: DbDep, user: CurrentUserDep) -> ConversationResponse:
+    conv = await get_conversation(db, conversation_id, user.id)
+    if not conv:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="대화를 찾을 수 없습니다.",
+        )
+    return ConversationResponse.model_validate(conv)

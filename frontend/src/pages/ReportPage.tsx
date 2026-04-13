@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
 import { Separator } from "@/components/ui/separator";
 import { ScoreRing } from "@/components/report/ScoreRing";
+import { InterestChart } from "@/components/report/InterestChart";
 import { RedFlagCard } from "@/components/report/RedFlagCard";
 import { ReplyCard } from "@/components/report/ReplyCard";
 import { analysisService, type AnalysisResult } from "@/services/analysis";
@@ -101,34 +102,13 @@ export default function ReportPage() {
         </>
       )}
 
-      {/* 감정 흐름 */}
+      {/* 감정 흐름 차트 */}
       {result.emotion_timeline.length > 0 && (
         <>
           <Separator className="my-8" />
           <section>
             <h2 className="text-lg font-semibold">감정 흐름</h2>
-            <div className="mt-3 space-y-2">
-              {result.emotion_timeline.map((point, i) => (
-                <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
-                  <span className="text-xs font-medium text-muted-foreground w-10">
-                    {point.phase}
-                  </span>
-                  <div className="flex-1">
-                    <span className="text-sm">{point.emotion}</span>
-                  </div>
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 10 }).map((_, j) => (
-                      <div
-                        key={j}
-                        className={`h-3 w-1.5 rounded-full ${
-                          j < point.intensity ? "bg-primary" : "bg-muted"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <InterestChart emotionTimeline={result.emotion_timeline} className="mt-4" />
           </section>
         </>
       )}

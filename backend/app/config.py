@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
+    # Kakao OAuth
+    kakao_client_id: str = ""
+    kakao_client_secret: str = ""
+    kakao_redirect_uri: str = "http://localhost:5173/oauth/kakao/callback"
+
     # CORS
     cors_origins: list[str] = ["http://localhost:5173"]
 

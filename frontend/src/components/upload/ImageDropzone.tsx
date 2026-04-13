@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
 interface ImageDropzoneProps {
   files: File[];
@@ -65,7 +66,7 @@ export function ImageDropzone({
         )}
       >
         <div className="text-center">
-          <p className="text-4xl">📸</p>
+          <PixelIcon name="camera" size={4} className="mx-auto" />
           <p className="mt-3 text-sm font-medium">
             카카오톡 대화 스크린샷을 올려주세요
           </p>

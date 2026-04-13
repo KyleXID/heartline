@@ -1,0 +1,7 @@
+[project]
+name = "heartline"
+version = "0.1.0"
+description = "카카오톡 대화 AI 분석 연애 코칭 서비스"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

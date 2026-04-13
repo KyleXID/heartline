@@ -4,7 +4,7 @@ import { BottomNav } from "./BottomNav";
 export default function RootLayout() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
-      <main className="mx-auto max-w-lg pb-16">
+      <main className="mx-auto max-w-lg pb-20">
         <Outlet />
       </main>
       <BottomNav />

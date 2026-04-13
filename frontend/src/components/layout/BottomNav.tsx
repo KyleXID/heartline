@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { path: "/", label: "홈", icon: "🫀" },
   { path: "/targets", label: "상대", icon: "💕" },
   { path: "/upload", label: "분석", icon: "📸" },
+  { path: "/history", label: "이력", icon: "📊" },
 ];
 
 export function BottomNav() {

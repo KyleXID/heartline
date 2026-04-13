@@ -7,7 +7,7 @@ export default function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-6">
+    <div className="flex flex-1 flex-col items-center justify-center px-6">
       <PixelCharacter type="sad" size={7} />
       <GameFrame variant="danger" className="mt-6 text-center">
         <p className="text-2xl font-bold" style={{ color: "var(--neon-pink)" }}>404</p>

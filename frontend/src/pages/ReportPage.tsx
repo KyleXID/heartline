@@ -33,7 +33,7 @@ export default function ReportPage() {
 
   if (error || !result) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-6">
         <PixelCharacter type="sad" size={6} />
         <p className="mt-4 text-sm" style={{ color: "var(--neon-pink)" }}>{error || "결과를 찾을 수 없습니다."}</p>
         <Button className="mt-4 pixel-border font-bold" style={{ backgroundColor: "var(--neon-pink)", color: "white" }} onClick={() => navigate("/upload")}>

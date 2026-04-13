@@ -42,7 +42,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-6 py-12 dot-pattern">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 dot-pattern">
       <PixelCharacter type="love" size={5} className="mb-4" bounce />
       <h1 className="text-xl font-bold mb-1" style={{ color: "var(--pixel-dark)" }}>NEW PLAYER</h1>
       <p className="text-xs text-muted-foreground mb-6">하트라인과 함께 연애 코칭을 시작하세요</p>

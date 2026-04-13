@@ -21,7 +21,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-between px-6 py-12" style={{ backgroundColor: "var(--pixel-dark)" }}>
+    <div className="flex flex-1 flex-col items-center justify-between px-6 py-12" style={{ backgroundColor: "var(--pixel-dark)" }}>
       <button className="self-end text-[10px] font-bold" style={{ color: "var(--neon-blue)" }} onClick={() => navigate("/register")}>
         SKIP {">>"}
       </button>

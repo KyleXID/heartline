@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.analysis import router as analysis_router
+from app.core.middleware import SecurityHeadersMiddleware
 from app.api.auth import router as auth_router
 from app.api.conversations import router as conversations_router
 from app.api.health import router as health_router
@@ -24,6 +25,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

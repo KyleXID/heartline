@@ -1,9 +1,14 @@
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, UploadFile, status
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.api.auth import CurrentUserDep
 from app.dependencies import DbDep
+from app.models.analysis_result import AnalysisResult
+from app.models.conversation import Conversation
+from app.models.target import Target
 from app.models.user import User
 from app.schemas.conversation import (
     ConversationCreate,
@@ -22,6 +27,43 @@ router = APIRouter(prefix="/api/conversations", tags=["conversations"])
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/heic"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_FILES = 20
+
+
+@router.get("/", response_model=list[dict])
+async def list_conversations(db: DbDep, user: CurrentUserDep) -> list[dict]:
+    """사용자의 대화 이력 조회 (분석 결과 포함)."""
+    result = await db.execute(
+        select(Conversation)
+        .options(selectinload(Conversation.images))
+        .where(Conversation.user_id == user.id)
+        .order_by(Conversation.created_at.desc())
+    )
+    conversations = list(result.scalars().all())
+
+    items = []
+    for conv in conversations:
+        # 분석 결과 조회
+        ar = await db.execute(
+            select(AnalysisResult).where(AnalysisResult.conversation_id == conv.id)
+        )
+        analysis = ar.scalar_one_or_none()
+
+        # 타겟 닉네임 조회
+        tr = await db.execute(select(Target).where(Target.id == conv.target_id))
+        target = tr.scalar_one_or_none()
+
+        items.append({
+            "id": str(conv.id),
+            "target_id": str(conv.target_id),
+            "target_nickname": target.nickname if target else "알 수 없음",
+            "status": conv.status,
+            "created_at": conv.created_at.isoformat(),
+            "image_count": len(conv.images),
+            "interest_score": analysis.interest_score if analysis else None,
+            "temperature": analysis.temperature if analysis else None,
+        })
+
+    return items
 
 
 @router.post("/", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)

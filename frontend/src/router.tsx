@@ -7,6 +7,8 @@ import TargetsPage from "@/pages/TargetsPage";
 import HistoryPage from "@/pages/HistoryPage";
 import UploadPage from "@/pages/UploadPage";
 import ReportPage from "@/pages/ReportPage";
+import OnboardingPage from "@/pages/OnboardingPage";
+import DemoPage from "@/pages/DemoPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -20,6 +22,8 @@ export const router = createBrowserRouter([
       { path: "history", element: <HistoryPage /> },
       { path: "upload", element: <UploadPage /> },
       { path: "report/:conversationId", element: <ReportPage /> },
+      { path: "onboarding", element: <OnboardingPage /> },
+      { path: "demo", element: <DemoPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

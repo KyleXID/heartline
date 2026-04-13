@@ -19,6 +19,8 @@ dependencies = [
     "redis>=5.3.1",
     "easyocr>=1.7.2",
     "opencv-python-headless>=4.13.0.92",
+    "httpx>=0.28.1",
+    "google-genai>=1.72.0",
 ]
 
 [tool.fastapi]

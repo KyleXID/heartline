@@ -3,21 +3,61 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================
+   Heartline Design System
+   ============================================ */
+
 :root {
+  /* Background & Foreground */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* Muted */
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.556 0 0);
+
+  /* Primary — 하트라인 브랜드 퍼플 */
   --primary: oklch(0.546 0.245 262.881);
   --primary-foreground: oklch(0.985 0 0);
+
+  /* Secondary */
   --secondary: oklch(0.96 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+
+  /* Accent — 핑크 계열 */
+  --accent: oklch(0.9 0.1 350);
+  --accent-foreground: oklch(0.35 0.15 350);
+
+  /* Destructive */
   --destructive: oklch(0.577 0.245 27.325);
+
+  /* Heart — 관심도/온도 표현 */
+  --heart: oklch(0.65 0.25 15);
+  --heart-warm: oklch(0.7 0.2 40);
+  --heart-cool: oklch(0.6 0.15 250);
+
+  /* Success — 긍정 신호 */
+  --success: oklch(0.65 0.2 145);
+  --success-foreground: oklch(0.985 0 0);
+
+  /* Warning — 주의 신호 */
+  --warning: oklch(0.75 0.18 80);
+  --warning-foreground: oklch(0.3 0.1 60);
+
+  /* Border & Input */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0.165 254.624);
+
+  /* Sidebar */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.45 0 0);
+  --sidebar-accent: oklch(0.96 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0.165 254.624);
+
+  /* Radius */
   --radius: 0.625rem;
 }
 
@@ -36,6 +76,23 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Heartline Custom Colors */
+  --color-heart: var(--heart);
+  --color-heart-warm: var(--heart-warm);
+  --color-heart-cool: var(--heart-cool);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

@@ -61,6 +61,7 @@ export function GameFrame({
           4px 4px 0 0 rgba(0,0,0,0.5)
         `,
         backgroundColor: style.bg,
+        color: "#e0e0e0",
         imageRendering: "pixelated",
       }}
     >

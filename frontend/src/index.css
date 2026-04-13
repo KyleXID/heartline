@@ -1,64 +1,66 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/galmuri.css');
 
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
-   Heartline Design System
+   Heartline Retro Pixel Design System
+   싸이월드 x 오락실 감성
    ============================================ */
 
 :root {
-  /* Background & Foreground */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* 싸이월드 파스텔 베이스 */
+  --background: oklch(0.97 0.015 330);
+  --foreground: oklch(0.2 0.05 300);
 
-  /* Muted */
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted: oklch(0.93 0.02 330);
+  --muted-foreground: oklch(0.45 0.03 300);
 
-  /* Primary — 하트라인 브랜드 퍼플 */
-  --primary: oklch(0.546 0.245 262.881);
-  --primary-foreground: oklch(0.985 0 0);
+  /* 메인 컬러 — 싸이월드 핑크보라 */
+  --primary: oklch(0.55 0.25 310);
+  --primary-foreground: oklch(0.98 0 0);
 
-  /* Secondary */
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.92 0.05 330);
+  --secondary-foreground: oklch(0.3 0.1 310);
 
-  /* Accent — 핑크 계열 */
-  --accent: oklch(0.9 0.1 350);
-  --accent-foreground: oklch(0.35 0.15 350);
+  /* 액센트 — 네온 핑크 */
+  --accent: oklch(0.75 0.2 350);
+  --accent-foreground: oklch(0.3 0.15 350);
 
-  /* Destructive */
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.6 0.25 25);
 
-  /* Heart — 관심도/온도 표현 */
-  --heart: oklch(0.65 0.25 15);
-  --heart-warm: oklch(0.7 0.2 40);
-  --heart-cool: oklch(0.6 0.15 250);
-
-  /* Success — 긍정 신호 */
-  --success: oklch(0.65 0.2 145);
-  --success-foreground: oklch(0.985 0 0);
-
-  /* Warning — 주의 신호 */
-  --warning: oklch(0.75 0.18 80);
+  /* 하트라인 커스텀 */
+  --heart: oklch(0.65 0.28 350);
+  --heart-warm: oklch(0.72 0.2 40);
+  --heart-cool: oklch(0.65 0.15 250);
+  --success: oklch(0.7 0.2 150);
+  --success-foreground: oklch(0.98 0 0);
+  --warning: oklch(0.8 0.15 85);
   --warning-foreground: oklch(0.3 0.1 60);
 
-  /* Border & Input */
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0.165 254.624);
+  /* 오락실 네온 */
+  --neon-pink: #ff6b9d;
+  --neon-purple: #9b59b6;
+  --neon-blue: #87ceeb;
+  --neon-yellow: #ffd93d;
+  --neon-green: #6bcb77;
+  --cyworld-pink: #ffb3c6;
+  --cyworld-purple: #c084fc;
+  --pixel-dark: #2d1b69;
 
-  /* Sidebar */
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.45 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0.165 254.624);
+  --border: oklch(0.88 0.04 330);
+  --input: oklch(0.92 0.03 330);
+  --ring: oklch(0.6 0.2 310);
 
-  /* Radius */
-  --radius: 0.625rem;
+  --sidebar: oklch(0.95 0.02 330);
+  --sidebar-foreground: oklch(0.4 0.03 300);
+  --sidebar-accent: oklch(0.93 0.03 330);
+  --sidebar-accent-foreground: oklch(0.25 0.05 300);
+  --sidebar-border: oklch(0.88 0.04 330);
+  --sidebar-ring: oklch(0.6 0.2 310);
+
+  --radius: 0.25rem;
 }
 
 @theme inline {
@@ -82,8 +84,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  /* Heartline Custom Colors */
   --color-heart: var(--heart);
   --color-heart-warm: var(--heart-warm);
   --color-heart-cool: var(--heart-cool);
@@ -91,11 +91,9 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
-
-  /* Radius */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  --radius-sm: calc(var(--radius));
+  --radius-md: calc(var(--radius));
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
@@ -105,7 +103,55 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Geist Variable", system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    font-family: "Galmuri11", "DungGeunMo", monospace;
+    -webkit-font-smoothing: none;
+    image-rendering: pixelated;
+  }
+}
+
+/* 레트로 픽셀 버튼 스타일 */
+@layer utilities {
+  .pixel-shadow {
+    box-shadow: 3px 3px 0 0 var(--pixel-dark);
+  }
+  .pixel-shadow-sm {
+    box-shadow: 2px 2px 0 0 var(--pixel-dark);
+  }
+  .pixel-inset {
+    box-shadow: inset 2px 2px 0 0 rgba(255,255,255,0.2), inset -2px -2px 0 0 rgba(0,0,0,0.1);
+  }
+  .pixel-border {
+    border: 2px solid var(--pixel-dark);
+  }
+
+  /* 싸이월드 도트 패턴 배경 */
+  .dot-pattern {
+    background-image: radial-gradient(var(--cyworld-pink) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* 반짝임 애니메이션 */
+  .sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* 레트로 스캔라인 효과 */
+  .scanlines::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+    pointer-events: none;
   }
 }

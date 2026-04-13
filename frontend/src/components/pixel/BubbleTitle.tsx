@@ -24,9 +24,9 @@ const COLORS = [
 ];
 
 const SIZES = {
-  sm: { fontSize: 24, padding: "4px 8px", borderWidth: 3, shadowOffset: 3, radius: 10 },
-  md: { fontSize: 36, padding: "6px 10px", borderWidth: 4, shadowOffset: 4, radius: 14 },
-  lg: { fontSize: 48, padding: "8px 14px", borderWidth: 5, shadowOffset: 5, radius: 18 },
+  sm: { fontSize: 18, padding: "3px 5px", borderWidth: 2, shadowOffset: 2, radius: 8 },
+  md: { fontSize: 26, padding: "4px 7px", borderWidth: 3, shadowOffset: 3, radius: 10 },
+  lg: { fontSize: 32, padding: "5px 8px", borderWidth: 3, shadowOffset: 3, radius: 12 },
 };
 
 export function BubbleTitle({ text, className, size = "md" }: BubbleTitleProps) {
@@ -34,7 +34,7 @@ export function BubbleTitle({ text, className, size = "md" }: BubbleTitleProps) 
   const chars = text.split("");
 
   return (
-    <div className={cn("flex flex-wrap items-center justify-center gap-1", className)}>
+    <div className={cn("flex items-center justify-center gap-0.5 flex-nowrap", className)}>
       {chars.map((char, i) => {
         if (char === " ") {
           return <div key={i} style={{ width: s.fontSize * 0.3 }} />;

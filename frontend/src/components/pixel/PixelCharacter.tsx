@@ -174,8 +174,8 @@ export function PixelCharacter({
 
   return (
     <div
-      className={cn("inline-block", bounce && "animate-bounce", className)}
-      style={{ imageRendering: "pixelated", lineHeight: 0, padding: bounce ? "8px 0" : undefined }}
+      className={cn("inline-block", bounce && "pixel-bounce", className)}
+      style={{ imageRendering: "pixelated", lineHeight: 0 }}
     >
       {grid.map((row, y) => (
         <div key={y} style={{ display: "flex", height: size }}>

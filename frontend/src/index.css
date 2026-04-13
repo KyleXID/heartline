@@ -162,6 +162,15 @@
     pointer-events: none;
   }
 
+  /* 도트 캐릭터 통통 바운스 (잘림 방지 — 고정 8px) */
+  .pixel-bounce {
+    animation: pixelBounce 1s ease-in-out infinite;
+  }
+  @keyframes pixelBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
   /* 버블 타이틀 통통 바운스 */
   @keyframes bubbleBounce {
     0%, 100% { transform: translateY(0) rotate(var(--rotate, 0deg)); }

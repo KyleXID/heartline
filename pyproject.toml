@@ -13,6 +13,8 @@ dependencies = [
     "bcrypt>=4.0",
     "python-multipart>=0.0.9",
     "alembic>=1.18.4",
+    "email-validator>=2.3.0",
+    "aiofiles>=25.1.0",
 ]
 
 [tool.fastapi]

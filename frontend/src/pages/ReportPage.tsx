@@ -7,6 +7,7 @@ import { ScoreRing } from "@/components/report/ScoreRing";
 import { InterestChart } from "@/components/report/InterestChart";
 import { RedFlagCard } from "@/components/report/RedFlagCard";
 import { ReplyCard } from "@/components/report/ReplyCard";
+import { StrategyTimeline } from "@/components/report/StrategyTimeline";
 import { analysisService, type AnalysisResult } from "@/services/analysis";
 import { ApiError } from "@/services/api";
 
@@ -112,6 +113,16 @@ export default function ReportPage() {
           </section>
         </>
       )}
+
+      {/* 전략 타임라인 */}
+      <Separator className="my-8" />
+      <section>
+        <h2 className="text-lg font-semibold">연애 전략 타임라인</h2>
+        <StrategyTimeline
+          interestScore={result.interest_score}
+          className="mt-4"
+        />
+      </section>
 
       {/* 하단 버튼 */}
       <div className="mt-10 space-y-3">

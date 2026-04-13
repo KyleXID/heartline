@@ -18,7 +18,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t-2"
+      className="fixed inset-x-0 bottom-0 z-50 border-t-2 pb-[env(safe-area-inset-bottom)]"
       style={{
         backgroundColor: "var(--pixel-dark)",
         borderColor: "var(--neon-purple)",
@@ -32,7 +32,7 @@ export function BottomNav() {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-bold transition-colors",
+                "flex flex-1 flex-col items-center gap-1 py-3 text-[10px] font-bold transition-colors",
               )}
               style={{
                 color: isActive ? "var(--neon-yellow)" : "var(--neon-blue)",

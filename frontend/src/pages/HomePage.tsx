@@ -20,7 +20,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="relative flex min-h-[75dvh] flex-col items-center justify-center px-6 text-center dot-pattern overflow-hidden">
+      <section className="relative flex min-h-[60dvh] flex-col items-center justify-center px-6 py-10 text-center dot-pattern overflow-hidden">
         {/* 떠다니는 아이콘들 */}
         <div className="absolute top-8 left-6 sparkle"><PixelIcon name="heart" size={3} /></div>
         <div className="absolute top-16 right-8 sparkle" style={{ animationDelay: "0.5s" }}><PixelIcon name="star" size={2} /></div>

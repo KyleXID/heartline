@@ -5,6 +5,7 @@ interface GameFrameProps {
   title?: string;
   className?: string;
   variant?: "default" | "select" | "info" | "danger";
+  onClick?: () => void;
 }
 
 const VARIANT_STYLES = {
@@ -43,12 +44,14 @@ export function GameFrame({
   title,
   className,
   variant = "default",
+  onClick,
 }: GameFrameProps) {
   const style = VARIANT_STYLES[variant];
 
   return (
     <div
       className={cn("relative", className)}
+      onClick={onClick}
       style={{
         border: `4px solid ${style.outer}`,
         boxShadow: `

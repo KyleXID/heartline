@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/auth";
 import { authService } from "@/services/auth";
 import { ApiError } from "@/services/api";
+import { PixelCharacter } from "@/components/pixel/PixelCharacter";
+import { GameFrame } from "@/components/pixel/GameFrame";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,92 +20,45 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       await authService.login({ email, password });
       const user = await authService.getMe();
       setUser(user);
       navigate("/upload");
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError("로그인 중 오류가 발생했습니다.");
-      }
+      setError(err instanceof ApiError ? err.message : "로그인 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-6">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">로그인</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            하트라인에 오신 것을 환영합니다
-          </p>
-        </div>
+    <div className="flex min-h-dvh flex-col items-center justify-center px-6 dot-pattern">
+      <PixelCharacter type="happy" size={5} className="mb-4" bounce />
+      <h1 className="text-xl font-bold mb-1" style={{ color: "var(--pixel-dark)" }}>LOGIN</h1>
+      <p className="text-xs text-muted-foreground mb-6">하트라인에 오신 것을 환영합니다</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              type="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            <Input
-              type="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              autoComplete="current-password"
-            />
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full"
-            size="lg"
-            disabled={loading}
-          >
-            {loading ? "로그인 중..." : "로그인"}
+      <GameFrame variant="default" className="w-full max-w-sm">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input type="email" placeholder="EMAIL" value={email} onChange={(e) => setEmail(e.target.value)} required className="pixel-border" />
+          <Input type="password" placeholder="PASSWORD" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className="pixel-border" />
+          {error && <p className="text-xs" style={{ color: "var(--neon-pink)" }}>{error}</p>}
+          <Button type="submit" className="w-full pixel-border font-bold" style={{ backgroundColor: "var(--neon-pink)", color: "white" }} disabled={loading}>
+            {loading ? "LOADING..." : ">> LOGIN <<"}
           </Button>
         </form>
+      </GameFrame>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">또는</span>
-          </div>
-        </div>
-
-        <Button
-          className="w-full bg-[#FEE500] text-[#191919] hover:bg-[#FDD835]"
-          size="lg"
-          type="button"
-        >
-          카카오로 시작하기
+      <div className="mt-4 w-full max-w-sm">
+        <Button className="w-full pixel-border font-bold" style={{ backgroundColor: "#FEE500", color: "#191919" }} size="lg">
+          KAKAO LOGIN
         </Button>
-
-        <p className="text-center text-sm text-muted-foreground">
-          계정이 없으신가요?{" "}
-          <Link to="/register" className="text-primary hover:underline">
-            회원가입
-          </Link>
-        </p>
       </div>
+
+      <p className="mt-6 text-xs text-muted-foreground">
+        계정이 없으신가요?{" "}
+        <Link to="/register" style={{ color: "var(--neon-purple)" }} className="font-bold">REGISTER</Link>
+      </p>
     </div>
   );
 }

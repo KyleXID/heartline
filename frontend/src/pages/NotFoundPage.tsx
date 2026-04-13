@@ -1,15 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PixelCharacter } from "@/components/pixel/PixelCharacter";
+import { GameFrame } from "@/components/pixel/GameFrame";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-6">
-      <h1 className="text-6xl font-bold text-muted-foreground">404</h1>
-      <p className="mt-4 text-muted-foreground">페이지를 찾을 수 없습니다</p>
-      <Button className="mt-6" onClick={() => navigate("/")}>
-        홈으로 돌아가기
+      <PixelCharacter type="sad" size={7} />
+      <GameFrame variant="danger" className="mt-6 text-center">
+        <p className="text-2xl font-bold" style={{ color: "var(--neon-pink)" }}>404</p>
+        <p className="text-xs mt-1" style={{ color: "var(--neon-blue)" }}>PAGE NOT FOUND</p>
+      </GameFrame>
+      <Button className="mt-6 pixel-border font-bold" style={{ backgroundColor: "var(--neon-pink)", color: "white" }} onClick={() => navigate("/")}>
+        {">> GO HOME <<"}
       </Button>
     </div>
   );

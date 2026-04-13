@@ -123,6 +123,13 @@
   .pixel-border {
     border: 2px solid var(--pixel-dark);
   }
+  .pixel-border:is(input) {
+    background-color: #0d1b3e;
+    color: #e0e0e0;
+  }
+  .pixel-border:is(input)::placeholder {
+    color: #5d7599;
+  }
 
   /* 싸이월드 도트 패턴 배경 */
   .dot-pattern {

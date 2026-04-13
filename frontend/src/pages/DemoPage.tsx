@@ -46,7 +46,7 @@ export default function DemoPage() {
 
   if (!showResult) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-6">
         <PixelCharacter type="wink" size={6} className="mb-4" bounce />
         <h1 className="text-xl font-bold" style={{ color: "var(--pixel-dark)" }}>DEMO PLAY</h1>
         <p className="text-xs text-muted-foreground mt-1 mb-6">샘플 대화로 미리 체험해봐!</p>

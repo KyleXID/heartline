@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-6 dot-pattern">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 dot-pattern">
       <PixelCharacter type="happy" size={5} className="mb-4" bounce />
       <h1 className="text-xl font-bold mb-1" style={{ color: "var(--pixel-dark)" }}>LOGIN</h1>
       <p className="text-xs text-muted-foreground mb-6">하트라인에 오신 것을 환영합니다</p>

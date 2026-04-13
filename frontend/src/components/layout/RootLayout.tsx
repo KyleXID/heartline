@@ -3,8 +3,8 @@ import { BottomNav } from "./BottomNav";
 
 export default function RootLayout() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <main className="mx-auto max-w-lg pb-20">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      <main className="mx-auto w-full max-w-lg flex-1 pb-20">
         <Outlet />
       </main>
       <BottomNav />

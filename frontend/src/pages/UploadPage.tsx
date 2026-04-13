@@ -18,7 +18,7 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col px-6 pb-20 pt-8">
+    <div className="flex flex-1 flex-col px-6 pt-8">
       <div className="flex items-center gap-3 mb-6">
         <PixelCharacter type="think" size={4} />
         <div>

@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 import { PixelCharacter } from "@/components/pixel/PixelCharacter";
 import { PixelIcon } from "@/components/pixel/PixelIcon";
 import { GameFrame } from "@/components/pixel/GameFrame";
+import { BubbleTitle } from "@/components/pixel/BubbleTitle";
 
 const FEATURES = [
   { icon: "camera" as const, char: "happy" as const, title: "UPLOAD", desc: "카톡 대화를 캡처해서 올려줘!" },
@@ -32,10 +33,8 @@ export default function HomePage() {
             <PixelCharacter type="happy" size={5} bounce />
           </div>
 
-          <h1 className="text-3xl font-bold" style={{ color: "var(--pixel-dark)", letterSpacing: "0.15em" }}>
-            HEARTLINE
-          </h1>
-          <p className="text-sm" style={{ color: "var(--neon-purple)" }}>
+          <BubbleTitle text="HEARTLINE" size="lg" />
+          <p className="text-sm mt-2" style={{ color: "var(--neon-purple)" }}>
             - 카톡 대화 AI 분석 연애 코칭 -
           </p>
         </div>

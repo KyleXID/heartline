@@ -154,4 +154,10 @@
     );
     pointer-events: none;
   }
+
+  /* 버블 타이틀 통통 바운스 */
+  @keyframes bubbleBounce {
+    0%, 100% { transform: translateY(0) rotate(var(--rotate, 0deg)); }
+    50% { transform: translateY(-6px) rotate(var(--rotate, 0deg)); }
+  }
 }

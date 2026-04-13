@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = (
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/heartline"
+        "postgresql+asyncpg://localhost:5432/heartline"
     )
 
     # Redis

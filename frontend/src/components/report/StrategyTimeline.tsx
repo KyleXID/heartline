@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { PixelIcon } from "@/components/pixel/PixelIcon";
 
 interface TimelineStep {
   day: string;
@@ -40,10 +41,16 @@ function getStrategySteps(score: number, _goal?: string): TimelineStep[] {
   ];
 }
 
-const STATUS_STYLES = {
-  done: "bg-success text-white",
-  current: "bg-primary text-white ring-4 ring-primary/20",
-  upcoming: "bg-muted text-muted-foreground",
+const STATUS_COLORS = {
+  done: { bg: "var(--neon-green)", text: "#ffffff" },
+  current: { bg: "var(--neon-yellow)", text: "var(--pixel-dark)" },
+  upcoming: { bg: "var(--neon-purple)", text: "#ffffff" },
+};
+
+const STATUS_ICON = {
+  done: "shield" as const,
+  current: "lightning" as const,
+  upcoming: "star" as const,
 };
 
 export function StrategyTimeline({ interestScore, relationshipGoal, className }: StrategyTimelineProps) {
@@ -51,33 +58,36 @@ export function StrategyTimeline({ interestScore, relationshipGoal, className }:
 
   return (
     <div className={cn("relative", className)}>
-      {steps.map((step, i) => (
-        <div key={i} className="flex gap-4 pb-6 last:pb-0">
-          {/* 타임라인 라인 + 도트 */}
-          <div className="flex flex-col items-center">
-            <div
-              className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold",
-                STATUS_STYLES[step.status],
+      {steps.map((step, i) => {
+        const colors = STATUS_COLORS[step.status];
+        return (
+          <div key={i} className="flex gap-3 pb-5 last:pb-0">
+            <div className="flex flex-col items-center">
+              <div
+                className="flex h-8 w-8 items-center justify-center"
+                style={{
+                  backgroundColor: colors.bg,
+                  border: "2px solid var(--pixel-dark)",
+                  boxShadow: "2px 2px 0 0 rgba(0,0,0,0.3)",
+                }}
+              >
+                <PixelIcon name={STATUS_ICON[step.status]} size={1} />
+              </div>
+              {i < steps.length - 1 && (
+                <div className="mt-1 h-full w-0.5" style={{ backgroundColor: "var(--neon-purple)" }} />
               )}
-            >
-              {step.status === "done" ? "✓" : i + 1}
             </div>
-            {i < steps.length - 1 && (
-              <div className="mt-1 h-full w-0.5 bg-border" />
-            )}
-          </div>
 
-          {/* 내용 */}
-          <div className="flex-1 pb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">{step.day}</span>
-              <span className="text-sm font-semibold">{step.title}</span>
+            <div className="flex-1 pb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold" style={{ color: "var(--neon-yellow)" }}>{step.day}</span>
+                <span className="text-sm font-bold" style={{ color: "#e0e0e0" }}>{step.title}</span>
+              </div>
+              <p className="mt-0.5 text-xs" style={{ color: "var(--neon-blue)" }}>{step.description}</p>
             </div>
-            <p className="mt-0.5 text-xs text-muted-foreground">{step.description}</p>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
+    # Gemini AI
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+
     # Kakao OAuth
     kakao_client_id: str = ""
     kakao_client_secret: str = ""

@@ -9,6 +9,7 @@ import { GameFrame } from "@/components/pixel/GameFrame";
 import { StrategyTimeline } from "@/components/report/StrategyTimeline";
 import { analysisService, type AnalysisResult } from "@/services/analysis";
 import { ApiError } from "@/services/api";
+import { conversationService } from "@/services/conversation";
 
 export default function ReportPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -16,6 +17,8 @@ export default function ReportPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -70,6 +73,34 @@ export default function ReportPage() {
         </Button>
         <button className="w-full text-xs py-2 font-bold" style={{ color: "var(--neon-purple)" }} onClick={() => navigate("/")}>
           [ HOME ]
+        </button>
+        <button
+          className="w-full text-xs py-2 font-bold pixel-border"
+          style={{
+            color: isDeleted ? "var(--pixel-dark)" : "var(--neon-pink)",
+            borderColor: isDeleted ? "var(--pixel-dark)" : "var(--neon-pink)",
+            opacity: isDeleted || isDeleting ? 0.5 : 1,
+          }}
+          disabled={isDeleted || isDeleting}
+          onClick={async () => {
+            if (!conversationId) return;
+            const confirmed = window.confirm(
+              "이미지를 삭제하면 복구할 수 없습니다. 삭제하시겠습니까?",
+            );
+            if (!confirmed) return;
+            setIsDeleting(true);
+            try {
+              await conversationService.deleteImages(conversationId);
+              setIsDeleted(true);
+              alert("이미지가 삭제되었습니다.");
+            } catch {
+              alert("이미지 삭제에 실패했습니다.");
+            } finally {
+              setIsDeleting(false);
+            }
+          }}
+        >
+          {isDeleted ? "[ IMAGES DELETED ]" : isDeleting ? "[ DELETING... ]" : "[ DELETE IMAGES ]"}
         </button>
       </div>
     </div>

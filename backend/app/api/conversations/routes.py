@@ -1,3 +1,5 @@
+import os
+import shutil
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, UploadFile, status
@@ -111,6 +113,33 @@ async def upload_images(
         uploaded=len(images),
         images=[ConversationImageResponse.model_validate(img) for img in images],
     )
+
+
+@router.delete("/{conversation_id}/images")
+async def delete_images(
+    conversation_id: str,
+    db: DbDep,
+    user: CurrentUserDep,
+) -> dict:
+    """분석 완료 후 대화 이미지 물리 삭제 (개인정보 보호)."""
+    conv = await get_conversation(db, conversation_id, user.id)
+    if not conv:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="대화를 찾을 수 없습니다.",
+        )
+
+    # 물리 파일 삭제
+    upload_dir = f"uploads/conversations/{conversation_id}"
+    if os.path.exists(upload_dir):
+        shutil.rmtree(upload_dir)
+
+    # DB에서 image_file 필드 null 처리 (ocr_text는 보존)
+    for img in conv.images:
+        img.image_file = None
+    await db.commit()
+
+    return {"deleted": len(conv.images), "message": "이미지가 삭제되었습니다."}
 
 
 @router.get("/{conversation_id}", response_model=ConversationResponse)

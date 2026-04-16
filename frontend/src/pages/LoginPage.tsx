@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/auth";
 import { authService } from "@/services/auth";
 import { ApiError } from "@/services/api";
+import { oauthService } from "@/services/oauth";
 import { PixelCharacter } from "@/components/pixel/PixelCharacter";
 import { GameFrame } from "@/components/pixel/GameFrame";
 
@@ -15,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [kakaoLoading, setKakaoLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,8 +53,23 @@ export default function LoginPage() {
       </GameFrame>
 
       <div className="mt-4 w-full max-w-sm">
-        <Button className="w-full pixel-border font-bold" style={{ backgroundColor: "#FEE500", color: "#191919" }} size="lg">
-          KAKAO LOGIN
+        <Button
+          className="w-full pixel-border font-bold"
+          style={{ backgroundColor: "#FEE500", color: "#191919" }}
+          size="lg"
+          disabled={kakaoLoading}
+          onClick={async () => {
+            setKakaoLoading(true);
+            try {
+              const { url } = await oauthService.getKakaoLoginUrl();
+              window.location.href = url;
+            } catch {
+              toast.error("카카오 로그인을 사용할 수 없습니다");
+              setKakaoLoading(false);
+            }
+          }}
+        >
+          {kakaoLoading ? "LOADING..." : "KAKAO LOGIN"}
         </Button>
       </div>
 

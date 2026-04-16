@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api, uploadFiles } from "./api";
 
 export interface ConversationImage {
   id: string;
@@ -21,6 +21,21 @@ export interface ConversationWithScore extends Conversation {
   target_nickname?: string;
 }
 
+export interface ImageUploadResponse {
+  uploaded: number;
+  images: ConversationImage[];
+}
+
 export const conversationService = {
   get: (id: string) => api.get<Conversation>(`/conversations/${id}`),
+  create: (targetId: string) =>
+    api.post<Conversation>("/conversations/", { target_id: targetId }),
+  uploadImages: (conversationId: string, files: File[]) =>
+    uploadFiles<ImageUploadResponse>(
+      `/conversations/${conversationId}/images`,
+      files,
+      "files",
+    ),
+  getStatus: (id: string) => api.get<Conversation>(`/conversations/${id}`),
+  list: () => api.get<ConversationWithScore[]>("/conversations/"),
 };

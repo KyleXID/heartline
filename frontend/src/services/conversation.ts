@@ -38,4 +38,8 @@ export const conversationService = {
     ),
   getStatus: (id: string) => api.get<Conversation>(`/conversations/${id}`),
   list: () => api.get<ConversationWithScore[]>("/conversations/"),
+  deleteImages: (conversationId: string) =>
+    api.delete<{ deleted: number; message: string }>(
+      `/conversations/${conversationId}/images`,
+    ),
 };

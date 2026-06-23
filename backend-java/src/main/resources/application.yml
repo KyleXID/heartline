@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: heartline
+
+  datasource:
+    # 기존 Python 백엔드와 동일 DB 를 쓰면 스키마 충돌이 날 수 있으므로
+    # PoC 단계에서는 별도 DB(heartline_java) 사용을 권장한다.
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/heartline_java}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jackson:
+    # FastAPI/Pydantic 의 snake_case 응답(access_token, is_active, age_range 등)과 호환.
+    property-naming-strategy: SNAKE_CASE
+
+  jpa:
+    hibernate:
+      # PoC 편의를 위해 update. 운영 마이그레이션 단계에서는 Flyway/Liquibase + validate 로 전환한다.
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+    show-sql: ${JPA_SHOW_SQL:false}
+
+server:
+  port: 8000
+  # 리버스 프록시(nginx) 뒤에 있을 때만 활성화. 그 외에는 getRemoteAddr() 직접 사용.
+  forward-headers-strategy: framework
+
+# --- 애플리케이션 커스텀 설정 (config.py 대응) ---
+heartline:
+  jwt:
+    # 운영에서는 반드시 환경변수로 주입. 기존 Python 백엔드와 동일 값이어야 토큰 호환됨.
+    # jjwt 의 HS256 은 최소 256bit(32바이트) 키를 요구하므로 기본값도 32바이트 이상으로 둔다.
+    secret-key: ${SECRET_KEY:change-me-in-production-use-a-32byte-min-secret-key}
+    algorithm: HS256
+    access-token-expire-minutes: 30
+    refresh-token-expire-days: 7
+
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID:}
+    client-secret: ${KAKAO_CLIENT_SECRET:}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:5173/oauth/kakao/callback}
+
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+
+  ocr:
+    # Tesseract tessdata 디렉터리(kor.traineddata, eng.traineddata 포함). 비우면 시스템 기본 경로.
+    tessdata-path: ${TESSDATA_PREFIX:}
+    # EasyOCR(["ko","en"]) 대응. Tesseract 언어 코드.
+    language: kor+eng

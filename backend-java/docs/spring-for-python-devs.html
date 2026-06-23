@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>heartline로 배우는 Spring Boot — Python 개발자를 위한 zero base 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE
+   =========================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+:root {
+    /* type scale */
+    --title-size: clamp(1.6rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.4vw, 2.4rem);
+    --h3-size: clamp(1rem, 2.3vw, 1.6rem);
+    --body-size: clamp(0.78rem, 1.45vw, 1.08rem);
+    --small-size: clamp(0.66rem, 1vw, 0.84rem);
+    --code-size: clamp(0.6rem, 1.15vw, 0.92rem);
+
+    --slide-padding: clamp(1.1rem, 4vw, 3.8rem);
+    --content-gap: clamp(0.6rem, 2vw, 1.8rem);
+    --element-gap: clamp(0.3rem, 1vw, 0.9rem);
+
+    /* Terminal Green / GitHub dark palette */
+    --bg: #0d1117;
+    --bg-2: #010409;
+    --surface: #161b22;
+    --surface-2: #1c2333;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --green: #3fb950;
+    --green-bright: #56d364;
+    --green-glow: rgba(63, 185, 80, 0.15);
+    --py: #58a6ff;   /* Python = 파랑 */
+    --java: #f0883e; /* Java = 주황 */
+    --magenta: #bc8cff;
+    --red: #f85149;
+}
+
+body {
+    font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+    z-index: 2;
+}
+
+/* scanline + grid atmosphere */
+.slide::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(63,185,80,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(63,185,80,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    z-index: 0;
+    pointer-events: none;
+}
+.slide::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, var(--green-glow), transparent 70%);
+    z-index: 0; pointer-events: none;
+}
+
+/* terminal chrome label */
+.kicker {
+    font-size: var(--small-size);
+    color: var(--green);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--element-gap);
+    display: flex; align-items: center; gap: 0.5em;
+}
+.kicker::before { content: "▍"; color: var(--green-bright); }
+
+h1 { font-size: var(--title-size); font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; color: #fff; }
+h2 { font-size: var(--h2-size); font-weight: 700; line-height: 1.15; color: #fff; margin-bottom: var(--content-gap); }
+h2 .accent { color: var(--green-bright); }
+h3 { font-size: var(--h3-size); font-weight: 600; }
+p  { font-size: var(--body-size); color: var(--text-dim); }
+strong { color: var(--text); font-weight: 700; }
+.green { color: var(--green-bright); }
+.py-c { color: var(--py); }
+.java-c { color: var(--java); }
+.mag { color: var(--magenta); }
+
+/* prompt subtitle */
+.subtitle { font-size: var(--h3-size); color: var(--text-dim); margin-top: var(--content-gap); max-width: 46ch; }
+.subtitle .prompt { color: var(--green); }
+
+.tagline {
+    margin-top: calc(var(--content-gap) * 1.4);
+    font-size: var(--small-size);
+    color: var(--text-dim);
+    border-left: 2px solid var(--green);
+    padding-left: 0.9em;
+}
+
+/* bullet list */
+ul.bullets { list-style: none; display: flex; flex-direction: column; gap: clamp(0.45rem, 1.4vh, 1.1rem); margin-top: var(--element-gap); }
+ul.bullets li { font-size: var(--body-size); color: var(--text); padding-left: 1.6em; position: relative; }
+ul.bullets li::before { content: "→"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+ul.bullets li b { color: #fff; }
+ul.bullets li .dim { color: var(--text-dim); }
+
+/* term definition box */
+.term {
+    margin-top: var(--content-gap);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    padding: clamp(0.7rem, 1.8vw, 1.2rem);
+}
+.term .t-label { font-size: var(--small-size); color: var(--green); font-weight: 700; }
+.term .t-body { font-size: var(--body-size); color: var(--text-dim); margin-top: 0.3em; }
+.term .t-body b { color: var(--text); }
+
+/* code compare panels */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.6rem, 1.6vw, 1.3rem); margin-top: var(--element-gap); }
+.panel {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+}
+.panel-head {
+    font-size: var(--small-size);
+    font-weight: 700;
+    padding: 0.45em 0.9em;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.5em;
+    background: var(--surface);
+}
+.panel.py .panel-head { color: var(--py); }
+.panel.java .panel-head { color: var(--java); }
+.panel-head .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.panel.py .dot { background: var(--py); }
+.panel.java .dot { background: var(--java); }
+pre {
+    font-size: var(--code-size);
+    line-height: 1.55;
+    padding: clamp(0.6rem, 1.4vw, 1.1rem);
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    flex: 1;
+}
+pre .c { color: var(--text-dim); font-style: italic; }      /* comment */
+pre .k { color: var(--magenta); }                            /* keyword */
+pre .a { color: var(--green-bright); }                       /* annotation */
+pre .s { color: #a5d6ff; }                                   /* string */
+pre .t { color: var(--java); }                               /* type */
+pre .pyt { color: var(--py); }                               /* python type/builtin */
+pre .f { color: #d2a8ff; }                                   /* func/name */
+
+/* single full-width code */
+.code-single { margin-top: var(--element-gap); }
+.code-single .panel { width: 100%; }
+
+/* mapping table */
+.maptable { margin-top: var(--element-gap); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.maprow { display: grid; grid-template-columns: 1.1fr 1fr 1fr; font-size: var(--body-size); }
+.maprow > div { padding: clamp(0.4rem, 1vw, 0.7rem) clamp(0.6rem, 1.2vw, 1rem); border-bottom: 1px solid var(--border); }
+.maprow:last-child > div { border-bottom: none; }
+.maprow.head > div { background: var(--surface); color: var(--text-dim); font-size: var(--small-size); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.maprow .pcol { color: var(--py); border-right: 1px solid var(--border); }
+.maprow .jcol { color: var(--java); border-right: 1px solid var(--border); }
+.maprow .ncol { color: var(--text-dim); font-size: var(--small-size); }
+.maprow.head .pcol, .maprow.head .jcol, .maprow.head .ncol { color: var(--text-dim); }
+
+/* flow diagram */
+.flow { display: flex; align-items: stretch; gap: clamp(0.4rem,1vw,0.9rem); margin-top: var(--content-gap); flex-wrap: wrap; }
+.flow .node {
+    flex: 1; min-width: 120px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: clamp(0.7rem,1.6vw,1.2rem); text-align: center;
+}
+.flow .node .nh { font-size: var(--body-size); font-weight: 700; color: var(--green-bright); }
+.flow .node .nd { font-size: var(--small-size); color: var(--text-dim); margin-top: 0.3em; }
+.flow .arrow { align-self: center; color: var(--green); font-size: var(--h3-size); }
+
+/* two-column generic */
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--content-gap); margin-top: var(--element-gap); align-items: start; }
+
+/* footer index */
+.foot { position: absolute; bottom: clamp(0.6rem,1.5vh,1.2rem); left: var(--slide-padding); right: var(--slide-padding);
+    display: flex; justify-content: space-between; align-items: center; font-size: var(--small-size); color: var(--text-dim); z-index: 3; }
+.foot .brand { color: var(--green); }
+
+/* nav dots */
+.nav-dots { position: fixed; right: clamp(0.6rem,1.5vw,1.4rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 0.6rem; z-index: 50; }
+.nav-dots button { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--green); background: transparent; cursor: pointer; padding: 0; transition: all 0.25s; }
+.nav-dots button.active { background: var(--green); box-shadow: 0 0 10px var(--green); transform: scale(1.3); }
+
+/* progress */
+.progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--green-bright); z-index: 60; width: 0%; box-shadow: 0 0 8px var(--green); transition: width 0.2s; }
+
+/* keyboard hint */
+.kbd-hint { position: fixed; bottom: clamp(0.6rem,1.5vh,1rem); left: 50%; transform: translateX(-50%); font-size: var(--small-size); color: var(--text-dim); z-index: 50; opacity: 0.7; }
+.kbd-hint kbd { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0.05em 0.5em; color: var(--green); }
+
+/* reveal animation */
+[data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.6s cubic-bezier(.2,.7,.2,1), transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.slide.is-visible [data-reveal] { opacity: 1; transform: none; }
+.slide.is-visible [data-reveal="1"] { transition-delay: 0.08s; }
+.slide.is-visible [data-reveal="2"] { transition-delay: 0.18s; }
+.slide.is-visible [data-reveal="3"] { transition-delay: 0.28s; }
+.slide.is-visible [data-reveal="4"] { transition-delay: 0.38s; }
+
+/* title slide big mark */
+.bigmark { font-size: clamp(3rem, 13vw, 11rem); font-weight: 800; position: absolute; right: 2vw; bottom: 2vh; line-height: 0.8; z-index: 1; letter-spacing: -0.05em; -webkit-text-stroke: 1px var(--border); color: transparent; pointer-events: none; }
+
+.cursor { display: inline-block; width: 0.55em; height: 1em; background: var(--green-bright); margin-left: 0.1em; vertical-align: -0.12em; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* short screens */
+@media (max-height: 720px) {
+    :root { --slide-padding: clamp(0.8rem,3vw,2rem); --content-gap: clamp(0.45rem,1.5vw,1rem); --title-size: clamp(1.4rem,4.5vw,2.6rem); --h2-size: clamp(1.1rem,3vw,1.8rem); }
+}
+@media (max-height: 600px) {
+    .nav-dots, .kbd-hint, .bigmark { display: none; }
+    :root { --code-size: clamp(0.56rem,1vw,0.78rem); }
+}
+@media (max-width: 720px) {
+    .compare, .cols2 { grid-template-columns: 1fr; }
+    /* 매핑표는 좁은 화면에서도 py|java 2열 유지 + 설명 컬럼 숨김 + 폰트 축소 */
+    .maprow { grid-template-columns: 1fr 1fr; }
+    .maprow .jcol { border-right: none; }
+    .maprow .ncol { display: none; }
+    .maptable .maprow > div { font-size: var(--small-size); padding: 0.35rem 0.55rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+    html { scroll-behavior: auto; }
+    .cursor { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<main>
+
+<!-- 1 · TITLE -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>~/heartline/backend-java · 학습 가이드</div>
+        <h1 data-reveal="1">heartline로 배우는<br><span class="green">Spring Boot</span><span class="cursor"></span></h1>
+        <p class="subtitle" data-reveal="2"><span class="prompt">$</span> 7년차 Python 개발자를 위한 <strong>zero base</strong> Java/Spring 입문<br>— 우리가 방금 만든 백엔드 코드를 교재로</p>
+        <div class="tagline" data-reveal="3">이미 FastAPI를 안다면, 새로 배우는 건 90%가 "이름이 다른 같은 개념"입니다.</div>
+    </div>
+    <div class="foot"><span class="brand">spring-for-python-devs</span><span>01 / 22</span></div>
+</section>
+
+<!-- 2 · HOW TO READ -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>읽는 법</div>
+        <h2 data-reveal="1">겁먹지 마세요. <span class="accent">매핑</span>만 외우면 됩니다.</h2>
+        <ul class="bullets">
+            <li data-reveal="1">왼쪽 <b class="py-c">파란색</b>은 <b>Python</b>, 오른쪽 <b class="java-c">주황색</b>은 <b>Java</b>입니다. 늘 나란히 비교합니다.</li>
+            <li data-reveal="2">처음 보는 <b>용어</b>가 나오면 <span class="green">초록 박스</span>에서 한 줄로 정의합니다.</li>
+            <li data-reveal="3">모든 코드는 실제 <code>backend-java/</code> 파일에서 발췌한 것입니다.</li>
+            <li data-reveal="4">목표는 "Java 문법 마스터"가 아니라 <b>"이 프로젝트를 읽고 고칠 수 있다"</b>입니다.</li>
+        </ul>
+        <div class="term" data-reveal="4">
+            <div class="t-label">왜 Java/Spring?</div>
+            <div class="t-body">Spring Boot는 자바 진영에서 <b>FastAPI/Django에 해당하는 표준 웹 프레임워크</b>입니다. 기업 백엔드 채용 시장의 큰 축이라, 한 번 익혀두면 쓸모가 큽니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">읽는 법</span><span>02 / 22</span></div>
+</section>
+
+<!-- 3 · STACK MAP -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>큰 그림</div>
+        <h2 data-reveal="1">스택 한눈 매핑 <span class="accent">Python → Java</span></h2>
+        <div class="maptable" data-reveal="2">
+            <div class="maprow head"><div class="pcol">Python (기존)</div><div class="jcol">Java (이 프로젝트)</div><div class="ncol">정체</div></div>
+            <div class="maprow"><div class="pcol">FastAPI</div><div class="jcol">Spring Boot</div><div class="ncol">웹 프레임워크</div></div>
+            <div class="maprow"><div class="pcol">SQLAlchemy</div><div class="jcol">JPA / Hibernate</div><div class="ncol">ORM</div></div>
+            <div class="maprow"><div class="pcol">Pydantic 모델</div><div class="jcol">DTO (record)</div><div class="ncol">요청/응답 검증</div></div>
+            <div class="maprow"><div class="pcol">데코레이터 @</div><div class="jcol">어노테이션 @</div><div class="ncol">메타데이터 표식</div></div>
+            <div class="maprow"><div class="pcol">uv / pip</div><div class="jcol">Gradle</div><div class="ncol">패키지·빌드</div></div>
+            <div class="maprow"><div class="pcol">pytest</div><div class="jcol">JUnit 5</div><div class="ncol">테스트</div></div>
+            <div class="maprow"><div class="pcol">uvicorn</div><div class="jcol">내장 Tomcat</div><div class="ncol">웹 서버</div></div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">스택 매핑</span><span>03 / 22</span></div>
+</section>
+
+<!-- 4 · JAVA BASICS 1 -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>언어 기초 ①</div>
+        <h2 data-reveal="1">Java는 <span class="accent">컴파일 + 정적 타입</span> 언어</h2>
+        <ul class="bullets">
+            <li data-reveal="1">Python은 실행하며 해석(interpret). Java는 먼저 <b>컴파일</b>해서 실행합니다.</li>
+            <li data-reveal="2">모든 변수는 <b>타입을 미리 선언</b>합니다. <span class="dim">(파이썬 타입힌트가 "필수"가 된 버전)</span></li>
+            <li data-reveal="3">타입이 틀리면 실행 전에 <b>컴파일 에러</b>로 막아줍니다 — 든든한 안전망.</li>
+        </ul>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: JDK · JVM · 바이트코드</div>
+            <div class="t-body"><b>JVM</b>(자바 가상 머신) = 자바 프로그램이 도는 런타임. <b>바이트코드</b> = 소스를 컴파일한 중간 결과물(<code>.class</code>), JVM이 이걸 실행. <b>JDK</b> = 컴파일러+JVM+도구 묶음, 개발에 필요한 설치본. <span class="green">이 프로젝트는 JDK 21 필요.</span></div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">언어 기초 ①</span><span>04 / 22</span></div>
+</section>
+
+<!-- 5 · JAVA BASICS 2 (syntax) -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>언어 기초 ②</div>
+        <h2 data-reveal="1">문법 대조: <span class="accent">같은 함수, 다른 옷</span></h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>Python</div>
+<pre><span class="k">def</span> <span class="f">greet</span>(name: <span class="pyt">str</span>) -> <span class="pyt">str</span>:
+    <span class="c"># 들여쓰기로 블록 구분</span>
+    <span class="k">return</span> <span class="s">f"안녕, {name}"</span>
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>Java</div>
+<pre><span class="t">String</span> <span class="f">greet</span>(<span class="t">String</span> name) {
+    <span class="c">// 중괄호로 블록, 끝에 세미콜론</span>
+    <span class="k">return</span> <span class="s">"안녕, "</span> + name;
+}
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><b>반환 타입</b>이 함수 이름 <b>앞</b>에 옵니다 (<code>String greet</code>).</li>
+            <li data-reveal="4">블록은 <b>{ }</b>, 문장 끝은 <b>;</b> — 들여쓰기는 가독성용일 뿐 문법이 아닙니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">언어 기초 ②</span><span>05 / 22</span></div>
+</section>
+
+<!-- 6 · GRADLE -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>빌드 도구</div>
+        <h2 data-reveal="1">Gradle = <span class="accent">uv + pyproject.toml</span></h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>pyproject.toml</div>
+<pre><span class="c">[project]</span>
+dependencies = [
+  <span class="s">"fastapi"</span>,
+  <span class="s">"sqlalchemy"</span>,
+]
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>build.gradle</div>
+<pre>dependencies {
+  <span class="f">implementation</span> <span class="s">'...spring-boot-starter-web'</span>
+  <span class="f">implementation</span> <span class="s">'...spring-boot-starter-data-jpa'</span>
+}
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: starter · wrapper</div>
+            <div class="t-body"><b>starter</b> = 관련 라이브러리를 묶음으로 가져오는 의존성(<code>...-web</code> 하나면 웹 서버+JSON+검증이 다 따라옴). <b>gradlew</b>(wrapper) = 팀원이 같은 Gradle 버전을 쓰도록 보장하는 실행 스크립트. <span class="green">실행: <code>./gradlew bootRun</code></span></div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">빌드 도구</span><span>06 / 22</span></div>
+</section>
+
+<!-- 7 · PROJECT STRUCTURE -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>프로젝트 구조</div>
+        <h2 data-reveal="1">패키지 = <span class="accent">파이썬 모듈 디렉터리</span></h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>src/main/java/io/heumlabs/heartline/</div>
+<pre><span class="a">HeartlineApplication.java</span>   <span class="c"># 엔트리포인트 (main.py)</span>
+config/      <span class="c"># 설정·보안 (config.py)</span>
+domain/      <span class="c"># 엔티티 (models/)</span>
+repository/  <span class="c"># DB 접근 계층</span>
+auth/        <span class="c"># 컨트롤러+서비스+DTO (api/ + services/)</span>
+oauth/       <span class="c"># 카카오 로그인</span>
+service/     <span class="c"># OCR·파서 로직 (services/)</span>
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3">패키지 경로 = 폴더 경로. <code>io.heumlabs.heartline</code> 는 회사 도메인 거꾸로 쓴 <b>관례</b>입니다.</li>
+            <li data-reveal="4"><code>src/main/java</code>(코드)와 <code>src/test/java</code>(테스트)가 분리됩니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">프로젝트 구조</span><span>07 / 22</span></div>
+</section>
+
+<!-- 8 · WHAT IS SPRING BOOT -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>Spring Boot</div>
+        <h2 data-reveal="1">스프링의 핵심: <span class="accent">객체를 대신 만들어 주는 컨테이너</span></h2>
+        <ul class="bullets">
+            <li data-reveal="1">당신이 <code>new</code>로 객체를 안 만들어도, 스프링이 만들어 보관합니다.</li>
+            <li data-reveal="2">이 "스프링이 관리하는 객체"를 <b class="green">빈(Bean)</b>이라 부릅니다.</li>
+            <li data-reveal="3">필요한 곳에 빈을 <b>자동으로 꽂아줍니다</b> → 이게 의존성 주입(다음 장).</li>
+        </ul>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: IoC 컨테이너 · 자동 설정</div>
+            <div class="t-body"><b>IoC</b>(제어의 역전) = "객체 생성·연결을 내가 아니라 프레임워크가 한다". 그 객체들을 담는 통이 <b>컨테이너</b>. <b>자동 설정</b> = starter만 넣으면 DB·웹서버 기본 세팅을 스프링이 알아서 — <code>@SpringBootApplication</code> 한 줄이 시동을 겁니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">Spring Boot</span><span>08 / 22</span></div>
+</section>
+
+<!-- 9 · ANNOTATIONS -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>어노테이션</div>
+        <h2 data-reveal="1">어노테이션 <span class="java-c">@</span> = 데코레이터 <span class="py-c">@</span>의 사촌</h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>Python 데코레이터</div>
+<pre><span class="a">@app.post(<span class="s">"/login"</span>)</span>
+<span class="k">async def</span> <span class="f">login</span>(...):
+    ...
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>Java 어노테이션</div>
+<pre><span class="a">@PostMapping(<span class="s">"/login"</span>)</span>
+<span class="t">TokenResponse</span> <span class="f">login</span>(...) {
+    ...
+}
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">차이 한 줄</div>
+            <div class="t-body">데코레이터는 함수를 <b>감싸 실행을 바꾸지만</b>, 어노테이션은 그 자체로는 아무 일도 안 하는 <b>"표식"</b>입니다. 스프링이 시동 시 이 표식을 읽고(reflection) 동작을 연결합니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">어노테이션</span><span>09 / 22</span></div>
+</section>
+
+<!-- 10 · DI -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>의존성 주입 (DI)</div>
+        <h2 data-reveal="1">생성자에 적으면 <span class="accent">스프링이 꽂아준다</span></h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>auth/AuthService.java</div>
+<pre><span class="a">@Service</span>                          <span class="c">// "이건 서비스 빈"</span>
+<span class="k">public class</span> <span class="t">AuthService</span> {
+  <span class="k">private final</span> <span class="t">UserRepository</span> repo;
+
+  <span class="c">// 생성자 — 스프링이 UserRepository 빈을 자동 전달</span>
+  <span class="k">public</span> <span class="f">AuthService</span>(<span class="t">UserRepository</span> repo) {
+    <span class="k">this</span>.repo = repo;
+  }
+}
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><code>@Service @Repository @RestController @Component</code> 가 붙으면 <b>빈으로 등록</b>됩니다.</li>
+            <li data-reveal="4">파이썬에선 직접 <code>AuthService(repo)</code> 했지만, 여기선 <b>연결을 프레임워크가</b> 합니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">의존성 주입</span><span>10 / 22</span></div>
+</section>
+
+<!-- 11 · LAYERS -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>계층 구조</div>
+        <h2 data-reveal="1">요청은 <span class="accent">3계층</span>을 통과합니다</h2>
+        <div class="flow" data-reveal="2">
+            <div class="node"><div class="nh">Controller</div><div class="nd">HTTP 받기<br>@RestController</div></div>
+            <div class="arrow">→</div>
+            <div class="node"><div class="nh">Service</div><div class="nd">비즈니스 로직<br>@Service</div></div>
+            <div class="arrow">→</div>
+            <div class="node"><div class="nh">Repository</div><div class="nd">DB 입출력<br>JPA</div></div>
+            <div class="arrow">→</div>
+            <div class="node"><div class="nh">DB</div><div class="nd">PostgreSQL</div></div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">FastAPI에서도 하던 것</div>
+            <div class="t-body">FastAPI의 <code>router → services/ → models/</code> 흐름과 똑같습니다. 스프링은 이 계층 분리를 <b>어노테이션으로 명시적으로 강제</b>할 뿐입니다. 컨트롤러는 얇게, 로직은 서비스에.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">계층 구조</span><span>11 / 22</span></div>
+</section>
+
+<!-- 12 · ENTITY / JPA -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>엔티티 & JPA</div>
+        <h2 data-reveal="1">@Entity = <span class="accent">SQLAlchemy 모델</span></h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>models/user.py</div>
+<pre><span class="k">class</span> <span class="t">User</span>(Base):
+  __tablename__ = <span class="s">"users"</span>
+  email: <span class="pyt">Mapped</span>[str] = mapped_column(
+      unique=<span class="k">True</span>)
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>domain/User.java</div>
+<pre><span class="a">@Entity</span>
+<span class="a">@Table(name = <span class="s">"users"</span>)</span>
+<span class="k">public class</span> <span class="t">User</span> <span class="k">extends</span> <span class="t">BaseEntity</span> {
+  <span class="a">@Column(unique = <span class="k">true</span>)</span>
+  <span class="k">private</span> <span class="t">String</span> email;
+}
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: JPA · Hibernate · ORM</div>
+            <div class="t-body"><b>ORM</b> = 객체↔테이블 자동 변환(SQLAlchemy가 하던 일). <b>JPA</b> = 자바의 ORM 표준(규격), <b>Hibernate</b> = 그 표준의 실제 구현체. <code>extends BaseEntity</code>로 UUID·생성시각을 상속받습니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">엔티티 & JPA</span><span>12 / 22</span></div>
+</section>
+
+<!-- 13 · LOMBOK -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>Lombok</div>
+        <h2 data-reveal="1">Lombok = <span class="accent">보일러플레이트 자동 생성기</span></h2>
+        <ul class="bullets">
+            <li data-reveal="1">자바는 필드마다 <b>getter/setter</b>를 손으로 쓰는 문화가 있습니다 (지루함).</li>
+            <li data-reveal="2"><code>@Getter @Builder</code> 한 줄이면 컴파일 때 그 코드를 <b>대신 생성</b>합니다.</li>
+        </ul>
+        <div class="code-single" data-reveal="3">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>domain/User.java</div>
+<pre><span class="a">@Getter @Setter @Builder</span>      <span class="c">// 접근자·빌더 자동 생성</span>
+<span class="a">@NoArgsConstructor</span>             <span class="c">// JPA가 요구하는 기본 생성자</span>
+<span class="k">public class</span> <span class="t">User</span> <span class="k">extends</span> <span class="t">BaseEntity</span> { ... }
+
+<span class="c">// 사용 — 파이썬 키워드 인자처럼 읽힘</span>
+<span class="t">User</span>.<span class="f">builder</span>().<span class="f">email</span>(<span class="s">"a@b.com"</span>).<span class="f">build</span>();
+</pre>
+            </div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">Lombok</span><span>13 / 22</span></div>
+</section>
+
+<!-- 14 · REPOSITORY -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>Repository</div>
+        <h2 data-reveal="1">메서드 <span class="accent">이름만 적으면</span> 쿼리가 생긴다</h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>repository/UserRepository.java</div>
+<pre><span class="k">public interface</span> <span class="t">UserRepository</span>
+        <span class="k">extends</span> <span class="t">JpaRepository</span>&lt;<span class="t">User</span>, <span class="t">UUID</span>&gt; {
+
+  <span class="t">Optional</span>&lt;<span class="t">User</span>&gt; <span class="f">findByEmail</span>(<span class="t">String</span> email);
+  <span class="k">boolean</span> <span class="f">existsByEmail</span>(<span class="t">String</span> email);
+}
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><b>구현 코드가 없습니다.</b> 스프링이 메서드 이름을 파싱해 SQL을 만들어 줍니다.</li>
+            <li data-reveal="4"><code>save() findById() findAll() delete()</code> 는 <code>JpaRepository</code>에서 공짜로 상속.</li>
+        </ul>
+        <div class="term" data-reveal="4">
+            <div class="t-label">용어: interface · Optional</div>
+            <div class="t-body"><b>interface</b> = 메서드 "약속"만 적은 틀(구현 없음). <b>Optional&lt;User&gt;</b> = "User일 수도, 없을 수도" — 파이썬의 <code>User | None</code>을 안전하게 다루는 상자.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">Repository</span><span>14 / 22</span></div>
+</section>
+
+<!-- 15 · DTO / RECORD -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>DTO & record</div>
+        <h2 data-reveal="1">record = <span class="accent">Pydantic 모델</span>의 자바판</h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>schemas/auth.py</div>
+<pre><span class="k">class</span> <span class="t">UserRegister</span>(BaseModel):
+  email: <span class="pyt">EmailStr</span>
+  password: <span class="pyt">str</span> = Field(
+      min_length=8)
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>auth/dto/RegisterRequest.java</div>
+<pre><span class="k">public record</span> <span class="t">RegisterRequest</span>(
+  <span class="a">@Email</span> <span class="t">String</span> email,
+  <span class="a">@Size(min = 8)</span> <span class="t">String</span> password
+) {}
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: DTO · record · Bean Validation</div>
+            <div class="t-body"><b>DTO</b> = 계층 간 데이터 운반용 객체. <b>record</b> = 불변 데이터 클래스(자바 16+), Pydantic처럼 간결. <code>@Email @Size</code> = <b>Bean Validation</b> — 컨트롤러에서 <code>@Valid</code>로 자동 검증됩니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">DTO & record</span><span>15 / 22</span></div>
+</section>
+
+<!-- 16 · CONTROLLER -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>Controller</div>
+        <h2 data-reveal="1">@RestController = <span class="accent">FastAPI router</span></h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>auth/AuthController.java</div>
+<pre><span class="a">@RestController</span>
+<span class="a">@RequestMapping(<span class="s">"/api/auth"</span>)</span>      <span class="c">// 공통 경로 prefix</span>
+<span class="k">public class</span> <span class="t">AuthController</span> {
+
+  <span class="a">@PostMapping(<span class="s">"/login"</span>)</span>          <span class="c">// POST /api/auth/login</span>
+  <span class="t">TokenResponse</span> <span class="f">login</span>(<span class="a">@Valid @RequestBody</span> <span class="t">LoginRequest</span> req) {
+    <span class="k">return</span> authService.<span class="f">login</span>(req);
+  }
+}
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><code>@RequestBody</code> = 요청 JSON을 객체로(파이썬은 함수 인자 타입으로 자동).</li>
+            <li data-reveal="4">반환한 객체는 스프링이 <b>JSON으로 직렬화</b>해 응답합니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">Controller</span><span>16 / 22</span></div>
+</section>
+
+<!-- 17 · SERVICE / TRANSACTION -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>Service & 트랜잭션</div>
+        <h2 data-reveal="1">@Transactional <span class="accent">한 줄의 마법</span></h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>auth/AuthService.java</div>
+<pre><span class="a">@Transactional</span>                  <span class="c">// 이 메서드 = 하나의 DB 트랜잭션</span>
+<span class="k">public</span> <span class="t">User</span> <span class="f">register</span>(<span class="t">RegisterRequest</span> req) {
+  <span class="k">if</span> (repo.<span class="f">existsByEmail</span>(req.<span class="f">email</span>()))
+    <span class="k">throw new</span> <span class="t">ApiException</span>(CONFLICT, <span class="s">"이미 등록된 이메일"</span>);
+  <span class="k">return</span> repo.<span class="f">save</span>(...);    <span class="c">// 성공하면 commit, 예외면 자동 rollback</span>
+}
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: 트랜잭션 · throw</div>
+            <div class="t-body"><b>트랜잭션</b> = "전부 성공 or 전부 취소". 메서드 안에서 예외가 나면 DB 변경이 <b>자동 롤백</b>됩니다. <code>throw</code> = 파이썬 <code>raise</code>. SQLAlchemy에서 <code>session.commit()</code>을 손으로 부르던 걸 어노테이션이 대신합니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">Service & 트랜잭션</span><span>17 / 22</span></div>
+</section>
+
+<!-- 18 · SECURITY / JWT -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>보안 & JWT</div>
+        <h2 data-reveal="1">요청은 컨트롤러 전에 <span class="accent">필터</span>를 지난다</h2>
+        <div class="flow" data-reveal="2">
+            <div class="node"><div class="nh">요청 + 토큰</div><div class="nd">Authorization: Bearer ...</div></div>
+            <div class="arrow">→</div>
+            <div class="node"><div class="nh">JWT 필터</div><div class="nd">토큰 검증<br>사용자 확인</div></div>
+            <div class="arrow">→</div>
+            <div class="node"><div class="nh">Controller</div><div class="nd">인증된 요청만 통과</div></div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><b>필터(Filter)</b>는 FastAPI의 <b>미들웨어/Depends</b>에 해당 — 모든 요청을 가로채 검사합니다.</li>
+            <li data-reveal="4"><code>SecurityConfig</code>에서 "어떤 경로는 공개, 나머지는 인증 필요"를 선언합니다.</li>
+        </ul>
+        <div class="term" data-reveal="4">
+            <div class="t-label">호환 포인트</div>
+            <div class="t-body">알고리즘(HS256)과 비밀키만 같으면 <b>기존 파이썬이 발급한 JWT를 자바가 그대로 검증</b>합니다. 비밀번호 해시(bcrypt)도 포맷이 같아 재가입이 필요 없습니다.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">보안 & JWT</span><span>18 / 22</span></div>
+</section>
+
+<!-- 19 · CONFIG -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>설정</div>
+        <h2 data-reveal="1">application.yml = <span class="accent">config.py + .env</span></h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>config.py (Pydantic Settings)</div>
+<pre><span class="k">class</span> <span class="t">Settings</span>(BaseSettings):
+  secret_key: <span class="pyt">str</span>
+  access_token_expire_minutes: <span class="pyt">int</span> = 30
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>application.yml + record</div>
+<pre>heartline:
+  jwt:
+    secret-key: <span class="s">${SECRET_KEY}</span>
+    access-token-expire-minutes: 30
+</pre>
+            </div>
+        </div>
+        <div class="term" data-reveal="3">
+            <div class="t-label">용어: @ConfigurationProperties</div>
+            <div class="t-body"><code>JwtProperties</code> record에 <code>@ConfigurationProperties("heartline.jwt")</code>를 붙이면, yml의 <code>secret-key</code>가 <code>secretKey</code> 필드로 <b>자동 바인딩</b>됩니다. <code>${SECRET_KEY}</code>는 환경변수 주입 — Pydantic Settings와 판박이.</div>
+        </div>
+    </div>
+    <div class="foot"><span class="brand">설정</span><span>19 / 22</span></div>
+</section>
+
+<!-- 20 · TEST -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>테스트</div>
+        <h2 data-reveal="1">JUnit 5 + AssertJ = <span class="accent">pytest</span></h2>
+        <div class="compare" data-reveal="2">
+            <div class="panel py">
+                <div class="panel-head"><span class="dot"></span>test_parser.py</div>
+<pre><span class="k">def</span> <span class="f">test_parse_basic</span>():
+  msgs = parse_ocr_text(text, <span class="s">"나"</span>)
+  <span class="k">assert</span> len(msgs) == 2
+</pre>
+            </div>
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>KakaoMessageParserTest.java</div>
+<pre><span class="a">@Test</span>
+<span class="k">void</span> <span class="f">parseBasic</span>() {
+  <span class="k">var</span> msgs = parser.<span class="f">parseOcrText</span>(text, <span class="s">"나"</span>);
+  <span class="f">assertThat</span>(msgs).<span class="f">hasSize</span>(2);
+}
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><code>@Test</code> = pytest의 <code>test_</code> 함수. <code>assertThat(x).hasSize(2)</code> 는 읽기 쉬운 단언 문법.</li>
+            <li data-reveal="4"><b>실제로 이 프로젝트엔 파서 테스트 5개를 파이썬에서 그대로 이식</b>해 뒀습니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">테스트</span><span>20 / 22</span></div>
+</section>
+
+<!-- 21 · RUN -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>실행하기</div>
+        <h2 data-reveal="1">처음 한 번, <span class="accent">손에 익히기</span></h2>
+        <div class="code-single" data-reveal="2">
+            <div class="panel java">
+                <div class="panel-head"><span class="dot"></span>terminal</div>
+<pre><span class="c"># 0) JDK 21 설치 확인 (이 프로젝트 필수)</span>
+java -version
+
+<span class="c"># 1) Gradle wrapper 생성 (최초 1회) — 또는 IntelliJ로 import</span>
+gradle wrapper --gradle-version 8.12
+
+<span class="c"># 2) 실행 → http://localhost:8000</span>
+./gradlew bootRun
+
+<span class="c"># 3) 테스트</span>
+./gradlew test
+</pre>
+            </div>
+        </div>
+        <ul class="bullets">
+            <li data-reveal="3"><b>IntelliJ IDEA</b>(Community 무료)로 <code>build.gradle</code>을 열면 import·실행이 가장 쉽습니다.</li>
+        </ul>
+    </div>
+    <div class="foot"><span class="brand">실행하기</span><span>21 / 22</span></div>
+</section>
+
+<!-- 22 · CHEAT SHEET -->
+<section class="slide">
+    <div class="slide-content">
+        <div class="kicker" data-reveal>치트시트</div>
+        <h2 data-reveal="1">한 장 요약 — <span class="accent">막히면 여기로</span></h2>
+        <div class="maptable" data-reveal="2">
+            <div class="maprow head"><div class="pcol">파이썬에서</div><div class="jcol">스프링에서</div><div class="ncol">기억할 것</div></div>
+            <div class="maprow"><div class="pcol">@app.get/post</div><div class="jcol">@GetMapping/@PostMapping</div><div class="ncol">라우팅</div></div>
+            <div class="maprow"><div class="pcol">BaseModel</div><div class="jcol">record + @Valid</div><div class="ncol">검증</div></div>
+            <div class="maprow"><div class="pcol">SQLAlchemy 모델</div><div class="jcol">@Entity</div><div class="ncol">테이블 매핑</div></div>
+            <div class="maprow"><div class="pcol">session.query</div><div class="jcol">Repository 메서드</div><div class="ncol">DB 접근</div></div>
+            <div class="maprow"><div class="pcol">raise / commit</div><div class="jcol">throw / @Transactional</div><div class="ncol">예외·트랜잭션</div></div>
+        </div>
+        <div class="tagline" data-reveal="3">다음 단계 → 대화 업로드, OCR→파싱 DB 저장, Gemini 분석 엔진. 한 모듈씩 같은 패턴으로 이어집니다. <span class="green">읽을 수 있으면, 쓸 수 있습니다.</span></div>
+    </div>
+    <div class="foot"><span class="brand">끝 · happy hacking</span><span>22 / 22</span></div>
+</section>
+
+</main>
+
+<nav class="nav-dots" id="navDots" aria-label="슬라이드 내비게이션"></nav>
+<div class="kbd-hint"><kbd>↓</kbd> / <kbd>Space</kbd> 다음 · <kbd>↑</kbd> 이전</div>
+
+<script>
+(function () {
+    "use strict";
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const progress = document.getElementById('progress');
+    const navDots = document.getElementById('navDots');
+    let current = 0;
+
+    // build nav dots
+    slides.forEach((s, i) => {
+        const b = document.createElement('button');
+        b.setAttribute('aria-label', '슬라이드 ' + (i + 1));
+        b.addEventListener('click', () => goTo(i));
+        navDots.appendChild(b);
+    });
+    const dots = Array.from(navDots.children);
+
+    function goTo(i) {
+        i = Math.max(0, Math.min(slides.length - 1, i));
+        slides[i].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // reveal + active tracking via IntersectionObserver
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+            if (e.isIntersecting && e.intersectionRatio > 0.55) {
+                e.target.classList.add('is-visible');
+                current = slides.indexOf(e.target);
+                dots.forEach((d, di) => d.classList.toggle('active', di === current));
+                progress.style.width = ((current + 1) / slides.length * 100) + '%';
+            }
+        });
+    }, { threshold: [0, 0.55, 1] });
+    slides.forEach((s) => io.observe(s));
+
+    // keyboard navigation
+    window.addEventListener('keydown', (e) => {
+        if (['ArrowDown', 'ArrowRight', ' ', 'PageDown'].includes(e.key)) {
+            e.preventDefault(); goTo(current + 1);
+        } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) {
+            e.preventDefault(); goTo(current - 1);
+        } else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+        else if (e.key === 'End') { e.preventDefault(); goTo(slides.length - 1); }
+    });
+
+    // touch swipe (vertical)
+    let touchStartY = null;
+    window.addEventListener('touchstart', (e) => { touchStartY = e.changedTouches[0].clientY; }, { passive: true });
+    window.addEventListener('touchend', (e) => {
+        if (touchStartY === null) return;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dy) > 60) goTo(current + (dy < 0 ? 1 : -1));
+        touchStartY = null;
+    }, { passive: true });
+
+    // make first slide visible immediately
+    slides[0].classList.add('is-visible');
+    progress.style.width = (1 / slides.length * 100) + '%';
+    if (dots[0]) dots[0].classList.add('active');
+})();
+</script>
+
+</body>
+</html>

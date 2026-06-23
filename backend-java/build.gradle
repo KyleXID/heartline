@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'io.heumlabs'
+version = '0.1.0'
+
+java {
+    // Spring Boot 3.x 는 Java 17 이상 필수. 21(LTS) 권장.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    jjwtVersion = '0.12.6'
+}
+
+dependencies {
+    // --- Web / JPA / Validation ---
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // --- Security ---
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // --- JWT (pyjwt 대응) ---
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    // --- DB ---
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // --- Lombok (보일러플레이트 축소) ---
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // --- OCR (EasyOCR -> Tess4J) ---
+    // Tess4J: Tesseract JNA 래퍼. 실행에는 시스템 tesseract + tessdata(kor/eng) 필요(README 참고).
+    implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
+    // 이미지 전처리(OpenCV). opencv-platform 은 전 플랫폼 네이티브를 포함해 매우 크다(~수백 MB).
+    // 운영에서는 실행 OS 에 맞는 classifier(예: linux-x86_64)로 한정해 용량을 줄일 것.
+    implementation 'org.bytedeco:opencv-platform:4.10.0-1.5.11'
+    // Mat <-> BufferedImage 변환기(OpenCVFrameConverter/Java2DFrameConverter)는 javacv 에 있다.
+    // opencv-platform 은 이를 transitive 로 가져오지 않으므로 명시적으로 추가.
+    implementation 'org.bytedeco:javacv:1.5.11'
+
+    // --- AI (google-genai 대응. 분석 엔진 변환 시 활성화) ---
+    // implementation 'com.google.genai:google-genai:1.0.0'
+
+    // --- Test ---
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

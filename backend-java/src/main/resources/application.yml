@@ -14,6 +14,11 @@ spring:
     # FastAPI/Pydantic 의 snake_case 응답(access_token, is_active, age_range 등)과 호환.
     property-naming-strategy: SNAKE_CASE
 
+  data:
+    redis:
+      # core/cache.py 의 redis_url 대응.
+      url: ${REDIS_URL:redis://localhost:6379/0}
+
   jpa:
     hibernate:
       # PoC 편의를 위해 update. 운영 마이그레이션 단계에서는 Flyway/Liquibase + validate 로 전환한다.
@@ -52,3 +57,12 @@ heartline:
     tessdata-path: ${TESSDATA_PREFIX:}
     # EasyOCR(["ko","en"]) 대응. Tesseract 언어 코드.
     language: kor+eng
+
+  upload:
+    # 업로드 이미지 저장 루트 (services/conversation.py 의 UPLOAD_DIR 대응).
+    dir: ${UPLOAD_DIR:uploads}
+
+  gemini:
+    # config.py 의 gemini_api_key / gemini_model 대응.
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.0-flash}

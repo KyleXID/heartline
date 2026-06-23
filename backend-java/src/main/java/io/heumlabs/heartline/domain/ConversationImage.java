@@ -28,7 +28,8 @@ public class ConversationImage extends BaseEntity {
     @JoinColumn(name = "conversation_id", nullable = false)
     private Conversation conversation;
 
-    @Column(name = "image_file", nullable = false, length = 500)
+    /** 업로드된 파일 경로. 분석 후 이미지 삭제(개인정보 보호) 시 null 로 비운다(ocr_text 는 보존). */
+    @Column(name = "image_file", length = 500)
     private String imageFile;
 
     /** 업로드 순서. "order" 는 SQL 예약어라 따옴표로 escape. */

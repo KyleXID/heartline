@@ -2,6 +2,8 @@
 
 > 카카오톡 대화 스크린샷을 업로드하면 AI가 분석하여 연애 코칭을 해주는 웹 서비스
 
+> ⚙️ **백엔드 전환 진행 중**: Python/FastAPI → **Java/Spring Boot**. 현행 백엔드는 `backend-java/`이며, 기존 `backend/`(Python)는 JDK 21 환경에서 빌드·실행 검증이 끝나면 제거할 예정입니다.
+
 ## Tech Stack
 
 ### Frontend
@@ -15,30 +17,31 @@
 | TanStack Query | 서버 상태 관리 |
 | Zustand | 클라이언트 상태 관리 |
 
-### Backend
+### Backend (Spring Boot)
 | 기술 | 용도 |
 |------|------|
-| FastAPI | REST API 프레임워크 |
-| SQLAlchemy | ORM |
-| Alembic | DB 마이그레이션 |
+| Spring Boot 3.4 (Web MVC) | REST API 프레임워크 |
+| Spring Data JPA / Hibernate 6 | ORM |
+| Spring Security + jjwt | 인증/인가 (JWT) |
 | PostgreSQL | 메인 데이터베이스 |
-| Redis | 캐시 / 작업 큐 |
-| ARQ | 비동기 작업 처리 |
-| Uvicorn | ASGI 서버 |
+| Spring Data Redis | 캐시 |
+| Spring `@Async` | 비동기 작업 처리 (OCR 워커) |
+| Gradle | 빌드 / 의존성 |
+| 내장 Tomcat | 서블릿 컨테이너 |
 
 ### AI / OCR
 | 기술 | 용도 |
 |------|------|
-| EasyOCR | 카카오톡 스크린샷 텍스트 추출 (무료) |
-| OpenCV | 이미지 전처리 |
-| Google Gemini 2.0 Flash | 대화 분석 AI (무료 티어) |
+| Tess4J (Tesseract) | 카카오톡 스크린샷 텍스트 추출 (무료) |
+| JavaCV / bytedeco (OpenCV) | 이미지 전처리 |
+| Google Gemini 2.0 Flash | 대화 분석 AI (무료 티어, RestClient REST 호출) |
 
 ### Infra
 | 기술 | 용도 |
 |------|------|
-| Docker Compose | 개발/배포 환경 |
+| Docker Compose | 개발/배포 환경 (Java 백엔드용 구성은 전환 후 갱신 예정) |
 | Nginx | 리버스 프록시 |
-| pytest | 백엔드 테스트 |
+| JUnit 5 | 백엔드 테스트 |
 | Vitest | 프론트엔드 테스트 |
 | Playwright | E2E 테스트 |
 
@@ -51,9 +54,9 @@
 └──────────────────────┬──────────────────────────────┘
                        │ REST API (JSON)
 ┌──────────────────────▼──────────────────────────────┐
-│              Backend (FastAPI + SQLAlchemy)            │
-│  JWT Auth · OCR Pipeline · AI Analysis Engine        │
-│  ARQ (비동기 작업) · Redis (캐시/큐)                  │
+│         Backend (Spring Boot + Spring Data JPA)       │
+│  JWT Auth · OCR Pipeline(Tess4J) · AI Analysis(Gemini)│
+│  @Async OCR 워커 · Spring Data Redis (캐시)           │
 └──────────────────────┬──────────────────────────────┘
                        │
           ┌────────────┼────────────┐
@@ -65,29 +68,33 @@
 
 ```
 heartline/
-├── backend/
-│   ├── app/
-│   │   ├── main.py              # FastAPI 엔트리포인트
-│   │   ├── config.py            # Pydantic Settings
-│   │   ├── database.py          # SQLAlchemy 엔진/세션
-│   │   ├── dependencies.py      # 공통 의존성
-│   │   ├── api/                 # 라우터 (accounts, conversations, analysis, advice)
-│   │   ├── models/              # SQLAlchemy 모델
-│   │   ├── schemas/             # Pydantic 스키마
-│   │   ├── services/            # 비즈니스 로직
-│   │   └── core/                # 보안, 유틸, 미들웨어
-│   ├── alembic/                 # DB 마이그레이션
-│   └── tests/
+├── backend-java/                # ⭐ 현행 백엔드 (Spring Boot)
+│   ├── build.gradle
+│   ├── docs/                     # spring-for-python-devs.html (학습 슬라이드)
+│   └── src/
+│       ├── main/java/io/heumlabs/heartline/
+│       │   ├── HeartlineApplication.java   # 엔트리포인트
+│       │   ├── config/           # SecurityConfig, AsyncConfig, *Properties
+│       │   ├── common/           # BaseEntity, 예외 처리
+│       │   ├── domain/           # JPA 엔티티
+│       │   ├── repository/       # Spring Data JPA
+│       │   ├── auth/  oauth/     # 인증(JWT) · 카카오 로그인
+│       │   ├── target/  conversation/  analysis/  # 도메인 API
+│       │   ├── service/          # OCR 파이프라인 · 카톡 파서
+│       │   └── worker/           # 비동기 OCR 워커
+│       ├── main/resources/application.yml
+│       └── test/                 # JUnit 5
+├── backend/                     # (레거시) Python/FastAPI — 검증 후 제거 예정
 ├── frontend/
 │   └── src/
-│       ├── components/          # UI 컴포넌트
-│       ├── pages/               # 페이지
-│       ├── hooks/               # 커스텀 훅
-│       ├── services/            # API 호출
-│       └── stores/              # Zustand 스토어
+│       ├── components/           # UI 컴포넌트
+│       ├── pages/                # 페이지
+│       ├── hooks/                # 커스텀 훅
+│       ├── services/             # API 호출
+│       └── stores/               # Zustand 스토어
 ├── docker-compose.yml
-├── docs/                        # 프로젝트 문서
-└── CLAUDE.md                    # AI 코딩 가이드
+├── docs/                         # 프로젝트 문서
+└── CLAUDE.md                     # AI 코딩 가이드
 ```
 
 ## DB Schema
@@ -112,17 +119,23 @@ heartline/
 ## Getting Started
 
 ### Prerequisites
-- Python 3.13+
+- **JDK 21** (Spring Boot 3.x 필수)
 - Node.js 20+
-- Docker & Docker Compose
-- [uv](https://docs.astral.sh/uv/) (Python 패키지 매니저)
+- PostgreSQL, Redis
+- (OCR 사용 시) Tesseract + 한국어/영어 tessdata
+- Docker & Docker Compose (선택)
 
-### Backend
+> JDK는 시스템을 더럽히지 않게 [SDKMAN](https://sdkman.io/)으로 격리 설치를 권장합니다: `sdk install java 21-tem && sdk install gradle`
+
+### Backend (Spring Boot)
 ```bash
-cd backend
-uv sync
-uv run uvicorn app.main:app --reload
+cd backend-java
+gradle wrapper --gradle-version 8.12   # 최초 1회 (또는 IntelliJ로 import)
+./gradlew bootRun                       # http://localhost:8000
+./gradlew test
 ```
+
+자세한 환경 변수·엔드포인트·처리 흐름은 [`backend-java/README.md`](backend-java/README.md) 참고.
 
 ### Frontend
 ```bash
@@ -131,15 +144,10 @@ npm install
 npm run dev
 ```
 
-### Docker (Full Stack)
-```bash
-docker compose up -d
-```
-
 ## Development
 
 ### Package Management
-- Python: `uv add <package>` (pip 사용 금지)
+- Backend: `build.gradle`에 의존성 선언 (Gradle)
 - Frontend: `npm install <package>`
 
 ### Commit Convention
